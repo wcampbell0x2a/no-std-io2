@@ -1,12 +1,12 @@
 # no-std-io
 
-[![Actions Status](https://github.com/no-std-io/no-std-io/workflows/CI/badge.svg)](https://github.com/no-std-io/no-std-io/actions)
-[![Documentation](https://docs.rs/no_std_io/badge.svg)](https://docs.rs/no_std_io/latest/no_std_io)
+[![Actions Status](https://github.com/wcampbell0x2a/no-std-io/workflows/CI/badge.svg)](https://github.com/no-std-io/no-std-io/actions)
+[![Documentation](https://docs.rs/no_std_io2/badge.svg)](https://docs.rs/no_std_io2/latest/no_std_io2)
 ![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.56.0+-purple)
 
 ## Fork
 
-`no-std-io` is a fork of [core2](https://github.com/technocreatives/core2).
+`no-std-io2` is a fork of [no-std-io](https://github.com/no-std-io/no-std-io), which is a fork of [core2](https://github.com/technocreatives/core2).
 
 ## Overview
 
@@ -25,11 +25,11 @@ This crate is `std` by default -- use no default features to get `no_std` mode.
 
 ```toml
 [dependencies]
-no_std_io = "0.5"
+no_std_io2 = "0.7"
 ```
 
-Add the crate, use the things you would usually want from `std::io`, but instead from `no_std_io::io`, and
-use `no_std_io::error::Error` in place of `std::error::Error`.
+Add the crate, use the things you would usually want from `std::io`, but instead from `no_std_io2::io`, and
+use `no_std_io2::error::Error` in place of `std::error::Error`.
 
 ### Features
 
