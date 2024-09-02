@@ -1,6 +1,6 @@
 # no-std-io
 
-[![Actions Status](https://github.com/wcampbell0x2a/no-std-io/workflows/CI/badge.svg)](https://github.com/no-std-io/no-std-io/actions)
+[![Actions Status](https://github.com/wcampbell0x2a/no-std-io2/workflows/CI/badge.svg)](https://github.com/wcampbell0x2a/no-std-io2/actions)
 [![Documentation](https://docs.rs/no_std_io2/badge.svg)](https://docs.rs/no_std_io2/latest/no_std_io2)
 ![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.56.0+-purple)
 
