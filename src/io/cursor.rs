@@ -270,3 +270,16 @@ impl Write for Cursor<&mut [u8]> {
         Ok(())
     }
 }
+
+#[cfg(feature = "alloc")]
+impl Write for Cursor<&mut alloc::vec::Vec<u8>> {
+    #[inline]
+    fn write(&mut self, buf: &[u8]) -> Result<usize> {
+        slice_write(&mut self.pos, self.inner, buf)
+    }
+
+    #[inline]
+    fn flush(&mut self) -> Result<()> {
+        Ok(())
+    }
+}
