@@ -5,7 +5,7 @@ extern crate alloc;
 use alloc::vec::Vec;
 
 use libfuzzer_sys::fuzz_target;
-use no_std_io::io::{Cursor, Seek, SeekFrom, Write};
+use no_std_io2::io::{Cursor, Seek, SeekFrom, Write};
 
 fuzz_target!(|data: &[u8]| {
     let len = data.len();

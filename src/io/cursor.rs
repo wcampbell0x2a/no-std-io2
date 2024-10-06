@@ -24,7 +24,7 @@ use core::cmp;
 ///
 /// ```
 /// use std::io::prelude::*;
-/// use no_std_io::io::{self, Seek, SeekFrom, Write};
+/// use no_std_io2::io::{self, Seek, SeekFrom, Write};
 /// use std::fs::File;
 ///
 /// // a library function we've written
@@ -56,7 +56,7 @@ use core::cmp;
 /// fn test_writes_bytes() {
 ///     // setting up a real File is much slower than an in-memory buffer,
 ///     // let's use a cursor instead
-///     use no_std_io::io::Cursor;
+///     use no_std_io2::io::Cursor;
 ///     let mut buff = Cursor::new(vec![0; 15]);
 ///
 ///     write_ten_bytes_at_end(&mut buff).unwrap();
@@ -80,7 +80,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -95,7 +95,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -112,7 +112,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -132,7 +132,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let mut buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -149,7 +149,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Cursor, Seek, SeekFrom};
+    /// use no_std_io2::io::{Cursor, Seek, SeekFrom};
     /// use std::io::prelude::*;
     ///
     /// let mut buff = Cursor::new(vec![1, 2, 3, 4, 5]);
@@ -171,7 +171,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let mut buff = Cursor::new(vec![1, 2, 3, 4, 5]);
     ///

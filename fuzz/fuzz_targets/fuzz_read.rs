@@ -1,7 +1,7 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
-use no_std_io::io::Read;
+use no_std_io2::io::Read;
 
 fuzz_target!(|data: &[u8]| {
     let mut src = data.clone();

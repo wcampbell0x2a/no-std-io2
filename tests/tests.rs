@@ -1,5 +1,5 @@
 use core::cmp;
-use no_std_io::io::{self as io, BufRead, Cursor, Read, Write};
+use no_std_io2::io::{self as io, BufRead, Cursor, Read, Write};
 
 // #[test]
 // #[cfg_attr(target_os = "emscripten", ignore)]
