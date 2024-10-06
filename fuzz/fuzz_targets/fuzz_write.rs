@@ -5,7 +5,7 @@ extern crate alloc;
 use alloc::vec::Vec;
 
 use libfuzzer_sys::fuzz_target;
-use no_std_io::io::Write;
+use no_std_io2::io::Write;
 
 fuzz_target!(|data: &[u8]| {
     let mut pos = 0;

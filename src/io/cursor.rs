@@ -24,7 +24,7 @@ use core::cmp;
 ///
 /// ```
 /// use std::io::prelude::*;
-/// use no_std_io::io::{self, Seek, SeekFrom, Write};
+/// use no_std_io2::io::{self, Seek, SeekFrom, Write};
 /// use std::fs::File;
 ///
 /// // a library function we've written
@@ -56,7 +56,7 @@ use core::cmp;
 /// fn test_writes_bytes() {
 ///     // setting up a real File is much slower than an in-memory buffer,
 ///     // let's use a cursor instead
-///     use no_std_io::io::Cursor;
+///     use no_std_io2::io::Cursor;
 ///     let mut buff = Cursor::new(vec![0; 15]);
 ///
 ///     write_ten_bytes_at_end(&mut buff).unwrap();
@@ -80,7 +80,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -95,7 +95,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -112,7 +112,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -132,7 +132,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let mut buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -149,7 +149,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Cursor, Seek, SeekFrom};
+    /// use no_std_io2::io::{Cursor, Seek, SeekFrom};
     /// use std::io::prelude::*;
     ///
     /// let mut buff = Cursor::new(vec![1, 2, 3, 4, 5]);
@@ -171,7 +171,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::Cursor;
+    /// use no_std_io2::io::Cursor;
     ///
     /// let mut buff = Cursor::new(vec![1, 2, 3, 4, 5]);
     ///
@@ -275,11 +275,27 @@ impl Write for Cursor<&mut [u8]> {
 impl Write for Cursor<&mut alloc::vec::Vec<u8>> {
     #[inline]
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
-        slice_write(&mut self.pos, self.inner, buf)
+        self.inner.extend_from_slice(buf);
+        Ok(buf.len())
     }
 
     #[inline]
     fn flush(&mut self) -> Result<()> {
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    extern crate alloc;
+    #[cfg(feature = "alloc")]
+    #[test]
+    fn test_vec_start_0_cap() {
+        let mut out_buf = alloc::vec::Vec::new();
+        let mut cursor = Cursor::new(&mut out_buf);
+        let buf = [0x01, 0x02, 0x03];
+        cursor.write(&buf).unwrap();
+        assert_eq!(cursor.into_inner().as_slice(), [0x01, 0x02, 0x03]);
     }
 }

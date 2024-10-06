@@ -24,7 +24,7 @@ use core::{convert::From, fmt, result};
 /// A convenience function that bubbles an `io::Result` to its caller:
 ///
 /// ```
-/// use no_std_io::io;
+/// use no_std_io2::io;
 ///
 /// #[cfg(feature = "std")]
 /// fn get_string() -> io::Result<String> {
@@ -196,7 +196,7 @@ impl From<std::io::ErrorKind> for ErrorKind {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// let not_found = ErrorKind::from(std::io::ErrorKind::NotFound);
     /// let err: Error = not_found.into();
@@ -237,7 +237,7 @@ impl From<ErrorKind> for Error {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// let not_found = ErrorKind::NotFound;
     /// let error = Error::from(not_found);
@@ -260,7 +260,7 @@ impl From<std::io::Error> for Error {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// let not_found = std::io::Error::from(std::io::ErrorKind::NotFound);
     /// let error = Error::from(not_found);
@@ -283,7 +283,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// // errors can be created from strings
     /// let custom_error = Error::new(ErrorKind::Other, "oh no!");
@@ -311,7 +311,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: &Error) {
     ///     if let Some(inner_err) = err.get_ref() {
@@ -358,7 +358,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: Error) {
     ///     if let Some(inner_err) = err.into_inner() {
@@ -400,7 +400,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use no_std_io::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: Error) {
     ///     println!("{:?}", err.kind());
