@@ -1,8 +1,9 @@
 # no-std-io
 
-[![Actions Status](https://github.com/wcampbell0x2a/no-std-io2/workflows/CI/badge.svg)](https://github.com/wcampbell0x2a/no-std-io2/actions)
-[![Documentation](https://docs.rs/no_std_io2/badge.svg)](https://docs.rs/no_std_io2/latest/no_std_io2)
-![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.56.0+-purple)
+[<img alt="github" src="https://img.shields.io/badge/github-wcampbell0x2a/no_std_io2-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/wcampbell0x2a/no-std-io2)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/no-std-io2.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/no-std-io2)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-no_std_io2-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/no-std-io2)
+[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/wcampbell0x2a/no-std-io2/ci.yml?branch=main&style=for-the-badge" height="20">](https://github.com/wcampbell0x2a/no-std-io2/actions?query=branch%3Amain)
 
 ## Fork
 
