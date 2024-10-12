@@ -1,6 +1,6 @@
 [package]
 name = "no_std_io2"
-version = "0.8.0"
+version = "0.8.1"
 description = "The bare essentials of std::io for use in no_std. Alloc support is optional."
 license = "Apache-2.0 OR MIT"
 edition = "2021"
