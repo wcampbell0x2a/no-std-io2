@@ -285,15 +285,39 @@ impl Write for Cursor<&mut alloc::vec::Vec<u8>> {
     }
 }
 
+#[cfg(feature = "alloc")]
+impl Write for Cursor<alloc::vec::Vec<u8>> {
+    #[inline]
+    fn write(&mut self, buf: &[u8]) -> Result<usize> {
+        self.inner.extend_from_slice(buf);
+        Ok(buf.len())
+    }
+
+    #[inline]
+    fn flush(&mut self) -> Result<()> {
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     extern crate alloc;
     #[cfg(feature = "alloc")]
     #[test]
-    fn test_vec_start_0_cap() {
+    fn test_ref_vec_start_0_cap() {
         let mut out_buf = alloc::vec::Vec::new();
         let mut cursor = Cursor::new(&mut out_buf);
+        let buf = [0x01, 0x02, 0x03];
+        cursor.write(&buf).unwrap();
+        assert_eq!(cursor.into_inner().as_slice(), [0x01, 0x02, 0x03]);
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    fn test_vec_start_0_cap() {
+        let out_buf = alloc::vec::Vec::new();
+        let mut cursor = Cursor::new(out_buf);
         let buf = [0x01, 0x02, 0x03];
         cursor.write(&buf).unwrap();
         assert_eq!(cursor.into_inner().as_slice(), [0x01, 0x02, 0x03]);
