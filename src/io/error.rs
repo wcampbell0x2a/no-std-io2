@@ -1,4 +1,6 @@
 use core::{convert::From, fmt, result};
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
 
 /// A specialized [`Result`] type for I/O operations.
 ///
@@ -67,7 +69,10 @@ enum Repr {
 #[derive(Debug)]
 struct Custom {
     kind: ErrorKind,
+    #[cfg(not(feature = "alloc"))]
     error: &'static str,
+    #[cfg(feature = "alloc")]
+    error: Box<dyn crate::error::Error + Send + Sync>,
 }
 
 /// A list specifying general categories of I/O error.
@@ -302,11 +307,101 @@ impl Error {
     /// // errors can also be created from other errors
     /// let custom_error2 = Error::new(ErrorKind::Interrupted, custom_error.into_inner().unwrap());
     /// ```
+    #[cfg(not(feature = "alloc"))]
     pub fn new(kind: ErrorKind, error: &'static str) -> Error {
         Self::_new(kind, error)
     }
 
+    /// Creates a new I/O error from a known kind of error as well as an
+    /// arbitrary error payload.
+    ///
+    /// This function is used to generically create I/O errors which do not
+    /// originate from the OS itself. The `error` argument is an arbitrary
+    /// payload which will be contained in this [`Error`].
+    ///
+    /// Note that this function allocates memory on the heap.
+    /// If no extra payload is required, use the `From` conversion from
+    /// `ErrorKind`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::io::{Error, ErrorKind};
+    ///
+    /// // errors can be created from strings
+    /// let custom_error = Error::new(ErrorKind::Other, "oh no!");
+    ///
+    /// // errors can also be created from other errors
+    /// let custom_error2 = Error::new(ErrorKind::Interrupted, custom_error);
+    ///
+    /// // creating an error without payload (and without memory allocation)
+    /// let eof_error = Error::from(ErrorKind::UnexpectedEof);
+    /// ```
+    #[cfg(feature = "alloc")]
+    #[inline(never)]
+    pub fn new<E>(kind: ErrorKind, error: E) -> Error
+    where
+        E: Into<Box<dyn crate::error::Error + Send + Sync>>,
+    {
+        Self::_new(kind, error.into())
+    }
+
+    /// Creates a new I/O error from an arbitrary error payload.
+    ///
+    /// This function is used to generically create I/O errors which do not
+    /// originate from the OS itself. It is a shortcut for [`Error::new`]
+    /// with [`ErrorKind::Other`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::io::Error;
+    ///
+    /// // errors can be created from strings
+    /// let custom_error = Error::other("oh no!");
+    ///
+    /// // errors can also be created from other errors
+    /// let custom_error2 = Error::other(custom_error);
+    /// ```
+    #[cfg(not(feature = "alloc"))]
+    pub fn other(error: &'static str) -> Error {
+        Self::_new(ErrorKind::Other, error.into())
+    }
+
+    /// Creates a new I/O error from an arbitrary error payload.
+    ///
+    /// This function is used to generically create I/O errors which do not
+    /// originate from the OS itself. It is a shortcut for [`Error::new`]
+    /// with [`ErrorKind::Other`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::io::Error;
+    ///
+    /// // errors can be created from strings
+    /// let custom_error = Error::other("oh no!");
+    ///
+    /// // errors can also be created from other errors
+    /// let custom_error2 = Error::other(custom_error);
+    /// ```
+    #[cfg(feature = "alloc")]
+    pub fn other<E>(error: E) -> Error
+    where
+        E: Into<Box<dyn crate::error::Error + Send + Sync>>,
+    {
+        Self::_new(ErrorKind::Other, error.into())
+    }
+
+    #[cfg(not(feature = "alloc"))]
     fn _new(kind: ErrorKind, error: &'static str) -> Error {
+        Error {
+            repr: Repr::Custom(Custom { kind, error }),
+        }
+    }
+
+    #[cfg(feature = "alloc")]
+    fn _new(kind: ErrorKind, error: Box<dyn crate::error::Error + Send + Sync>) -> Error {
         Error {
             repr: Repr::Custom(Custom { kind, error }),
         }
@@ -352,10 +447,50 @@ impl Error {
     ///     emit_error();
     /// }
     /// ```
+    #[cfg(not(feature = "alloc"))]
+    #[must_use]
+    #[inline]
     pub fn get_ref(&self) -> Option<&&'static str> {
         match self.repr {
             Repr::Simple(..) => None,
             Repr::Custom(ref c) => Some(&c.error),
+        }
+    }
+
+    /// Returns a reference to the inner error wrapped by this error (if any).
+    ///
+    /// If this [`Error`] was constructed via [`new`] then this function will
+    /// return [`Some`], otherwise it will return [`None`].
+    ///
+    /// [`new`]: Error::new
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::io::{Error, ErrorKind};
+    ///
+    /// fn print_error(err: &Error) {
+    ///     if let Some(inner_err) = err.get_ref() {
+    ///         println!("Inner error: {inner_err:?}");
+    ///     } else {
+    ///         println!("No inner error");
+    ///     }
+    /// }
+    ///
+    /// fn main() {
+    ///     // Will print "No inner error".
+    ///     print_error(&Error::last_os_error());
+    ///     // Will print "Inner error: ...".
+    ///     print_error(&Error::new(ErrorKind::Other, "oh no!"));
+    /// }
+    /// ```
+    #[cfg(feature = "alloc")]
+    #[must_use]
+    #[inline]
+    pub fn get_ref(&self) -> Option<&(dyn crate::error::Error + Send + Sync + 'static)> {
+        match &self.repr {
+            Repr::Simple(_) => None,
+            Repr::Custom(c) => Some(&*c.error),
         }
     }
 
@@ -399,9 +534,49 @@ impl Error {
     ///     emit_error();
     /// }
     /// ```
+    #[cfg(not(feature = "alloc"))]
+    #[must_use = "`self` will be dropped if the result is not used"]
+    #[inline]
     pub fn into_inner(self) -> Option<&'static str> {
         match self.repr {
             Repr::Simple(..) => None,
+            Repr::Custom(c) => Some(c.error),
+        }
+    }
+
+    /// Consumes the `Error`, returning its inner error (if any).
+    ///
+    /// If this [`Error`] was constructed via [`new`] then this function will
+    /// return [`Some`], otherwise it will return [`None`].
+    ///
+    /// [`new`]: Error::new
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::io::{Error, ErrorKind};
+    ///
+    /// fn print_error(err: Error) {
+    ///     if let Some(inner_err) = err.into_inner() {
+    ///         println!("Inner error: {inner_err}");
+    ///     } else {
+    ///         println!("No inner error");
+    ///     }
+    /// }
+    ///
+    /// fn main() {
+    ///     // Will print "No inner error".
+    ///     print_error(Error::last_os_error());
+    ///     // Will print "Inner error: ...".
+    ///     print_error(Error::new(ErrorKind::Other, "oh no!"));
+    /// }
+    /// ```
+    #[cfg(feature = "alloc")]
+    #[must_use = "`self` will be dropped if the result is not used"]
+    #[inline]
+    pub fn into_inner(self) -> Option<Box<dyn crate::error::Error + Send + Sync>> {
+        match self.repr {
+            Repr::Simple(_) => None,
             Repr::Custom(c) => Some(c.error),
         }
     }
