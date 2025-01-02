@@ -326,7 +326,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// // errors can be created from strings
     /// let custom_error = Error::new(ErrorKind::Other, "oh no!");
@@ -355,12 +355,13 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Error;
+    /// use no_std_io2::io::Error;
     ///
     /// // errors can be created from strings
     /// let custom_error = Error::other("oh no!");
     ///
     /// // errors can also be created from other errors
+    /// #[cfg(feature = "alloc")]
     /// let custom_error2 = Error::other(custom_error);
     /// ```
     #[cfg(not(feature = "alloc"))]
@@ -377,7 +378,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Error;
+    /// use no_std_io2::io::Error;
     ///
     /// // errors can be created from strings
     /// let custom_error = Error::other("oh no!");
@@ -467,7 +468,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: &Error) {
     ///     if let Some(inner_err) = err.get_ref() {
@@ -478,8 +479,6 @@ impl Error {
     /// }
     ///
     /// fn main() {
-    ///     // Will print "No inner error".
-    ///     print_error(&Error::last_os_error());
     ///     // Will print "Inner error: ...".
     ///     print_error(&Error::new(ErrorKind::Other, "oh no!"));
     /// }
@@ -554,7 +553,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use no_std_io2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: Error) {
     ///     if let Some(inner_err) = err.into_inner() {
@@ -565,8 +564,6 @@ impl Error {
     /// }
     ///
     /// fn main() {
-    ///     // Will print "No inner error".
-    ///     print_error(Error::last_os_error());
     ///     // Will print "Inner error: ...".
     ///     print_error(Error::new(ErrorKind::Other, "oh no!"));
     /// }
