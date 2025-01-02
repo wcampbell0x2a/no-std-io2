@@ -2,11 +2,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "std", allow(dead_code))]
 
-#[cfg(not(feature = "std"))]
-pub mod error;
-
-#[cfg(feature = "std")]
-pub use std::error;
+pub use core::error;
 
 #[cfg(not(feature = "std"))]
 pub mod io;
