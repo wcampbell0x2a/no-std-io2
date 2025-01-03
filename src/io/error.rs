@@ -152,6 +152,13 @@ pub enum ErrorKind {
     /// read.
     UnexpectedEof,
 
+    /// Unsupported I/O error
+    Unsupported,
+
+    /// An operation could not be completed, because it failed to allocate
+    /// enough memory.
+    OutOfMemory,
+
     /// Any I/O error from the standard library that's not part of this list.
     ///
     /// Errors that are `Uncategorized` now may move to a different or a new
@@ -182,6 +189,8 @@ impl ErrorKind {
             ErrorKind::Interrupted => "operation interrupted",
             ErrorKind::Other => "other os error",
             ErrorKind::UnexpectedEof => "unexpected end of file",
+            ErrorKind::Unsupported => "unsupported I/O error",
+            ErrorKind::OutOfMemory => "out of memory",
             ErrorKind::Uncategorized => "uncategorized",
         }
     }
@@ -222,6 +231,8 @@ impl From<std::io::ErrorKind> for ErrorKind {
             std::io::ErrorKind::Interrupted => ErrorKind::Interrupted,
             std::io::ErrorKind::Other => ErrorKind::Other,
             std::io::ErrorKind::UnexpectedEof => ErrorKind::UnexpectedEof,
+            std::io::ErrorKind::Unsupported => ErrorKind::Unsupported,
+            std::io::ErrorKind::OutOfMemory => ErrorKind::OutOfMemory,
             _ => ErrorKind::Uncategorized,
         }
     }
