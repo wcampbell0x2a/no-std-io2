@@ -449,6 +449,29 @@ fn test_writer_read_from_one_buf() {
     assert_eq!(writer.written, &[1, 1, 2, 2, 3]);
 }
 
+#[test]
+fn test_io_error_other() {
+    let err = io::Error::other("error!");
+    assert_eq!(err.kind(), io::ErrorKind::Other);
+    assert_eq!(err.into_inner().unwrap().to_string(), "error!");
+
+    #[cfg(feature = "alloc")]
+    {
+        let err = io::Error::other(io::Error::other("nested"));
+        assert_eq!(err.kind(), io::ErrorKind::Other);
+        assert_eq!(
+            err.into_inner()
+                .unwrap()
+                .downcast::<io::Error>()
+                .unwrap()
+                .into_inner()
+                .unwrap()
+                .to_string(),
+            "nested"
+        );
+    }
+}
+
 // #[test]
 // fn test_writer_read_from_multiple_bufs() {
 //     let mut writer = test_writer(3, 3);
