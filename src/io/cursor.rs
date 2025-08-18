@@ -86,8 +86,8 @@ impl<T> Cursor<T> {
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
     /// # force_inference(&buff);
     /// ```
-    pub fn new(inner: T) -> Cursor<T> {
-        Cursor { pos: 0, inner }
+    pub const fn new(inner: T) -> Self {
+        Self { pos: 0, inner }
     }
 
     /// Consumes this cursor, returning the underlying value.
@@ -120,7 +120,7 @@ impl<T> Cursor<T> {
     ///
     /// let reference = buff.get_ref();
     /// ```
-    pub fn get_ref(&self) -> &T {
+    pub const fn get_ref(&self) -> &T {
         &self.inner
     }
 
@@ -140,7 +140,7 @@ impl<T> Cursor<T> {
     ///
     /// let reference = buff.get_mut();
     /// ```
-    pub fn get_mut(&mut self) -> &mut T {
+    pub const fn get_mut(&mut self) -> &mut T {
         &mut self.inner
     }
 
@@ -162,7 +162,7 @@ impl<T> Cursor<T> {
     /// buff.seek(SeekFrom::Current(-1)).unwrap();
     /// assert_eq!(buff.position(), 1);
     /// ```
-    pub fn position(&self) -> u64 {
+    pub const fn position(&self) -> u64 {
         self.pos
     }
 
@@ -183,7 +183,7 @@ impl<T> Cursor<T> {
     /// buff.set_position(4);
     /// assert_eq!(buff.position(), 4);
     /// ```
-    pub fn set_position(&mut self, pos: u64) {
+    pub const fn set_position(&mut self, pos: u64) {
         self.pos = pos;
     }
 }
@@ -301,7 +301,7 @@ impl Write for Cursor<alloc::vec::Vec<u8>> {
 
 #[cfg(test)]
 mod tests {
-    
+
     extern crate alloc;
     #[cfg(feature = "alloc")]
     #[test]

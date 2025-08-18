@@ -408,7 +408,7 @@ impl<'a> Read for ExampleSliceReader<'a> {
 
 /// Create a new writer that reads from at most `n_bufs` and reads
 /// `per_call` bytes (in total) per call to write.
-fn test_writer() -> TestWriter {
+const fn test_writer() -> TestWriter {
     TestWriter {
         written: Vec::new(),
         per_call: 2,

@@ -65,8 +65,8 @@ impl<R: Read, const S: usize> BufReader<R, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn new(inner: R) -> BufReader<R, S> {
-        BufReader {
+    pub const fn new(inner: R) -> Self {
+        Self {
             inner,
             buf: [0; S],
             pos: 0,
@@ -94,7 +94,7 @@ impl<R, const S: usize> BufReader<R, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_ref(&self) -> &R {
+    pub const fn get_ref(&self) -> &R {
         &self.inner
     }
 
@@ -116,7 +116,7 @@ impl<R, const S: usize> BufReader<R, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_mut(&mut self) -> &mut R {
+    pub const fn get_mut(&mut self) -> &mut R {
         &mut self.inner
     }
 
@@ -165,7 +165,7 @@ impl<R, const S: usize> BufReader<R, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn capacity(&self) -> usize {
+    pub const fn capacity(&self) -> usize {
         S
     }
 
@@ -194,7 +194,7 @@ impl<R, const S: usize> BufReader<R, S> {
 
     /// Invalidates all data in the internal buffer.
     #[inline]
-    fn discard_buffer(&mut self) {
+    const fn discard_buffer(&mut self) {
         self.pos = 0;
         self.cap = 0;
     }
@@ -410,8 +410,8 @@ where
     ///
     /// let mut buffer = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
     /// ```
-    pub fn new(inner: W) -> BufWriter<W, S> {
-        BufWriter {
+    pub const fn new(inner: W) -> Self {
+        Self {
             inner: Some(inner),
             buf: [0; S],
             len: 0,
@@ -436,7 +436,7 @@ where
         }
 
         impl<'a, const S: usize> BufGuard<'a, S> {
-            fn new(buffer: &'a mut [u8; S]) -> Self {
+            const fn new(buffer: &'a mut [u8; S]) -> Self {
                 Self { buffer, written: 0 }
             }
 
@@ -446,12 +446,12 @@ where
             }
 
             /// Flag some bytes as removed from the front of the buffer
-            fn consume(&mut self, amt: usize) {
+            const fn consume(&mut self, amt: usize) {
                 self.written += amt;
             }
 
             /// true if all of the bytes have been written
-            fn done(&self) -> bool {
+            const fn done(&self) -> bool {
                 self.written >= self.buffer.len()
             }
         }
@@ -512,7 +512,7 @@ where
     /// // we can use reference just like buffer
     /// let reference = buffer.get_ref();
     /// ```
-    pub fn get_ref(&self) -> &W {
+    pub const fn get_ref(&self) -> &W {
         self.inner.as_ref().unwrap()
     }
 
@@ -531,7 +531,7 @@ where
     /// // we can use reference just like buffer
     /// let reference = buffer.get_mut();
     /// ```
-    pub fn get_mut(&mut self) -> &mut W {
+    pub const fn get_mut(&mut self) -> &mut W {
         self.inner.as_mut().unwrap()
     }
 
@@ -548,7 +548,7 @@ where
     /// // See how many bytes are currently buffered
     /// let bytes_buffered = buf_writer.buffer().len();
     /// ```
-    pub fn buffer(&self) -> &[u8] {
+    pub const fn buffer(&self) -> &[u8] {
         &self.buf
     }
 
@@ -567,7 +567,7 @@ where
     /// // Calculate how many bytes can be written without flushing
     /// let without_flush = capacity - buf_writer.buffer().len();
     /// ```
-    pub fn capacity(&self) -> usize {
+    pub const fn capacity(&self) -> usize {
         S
     }
 
@@ -590,7 +590,7 @@ where
     /// // unwrap the TcpStream and flush the buffer
     /// let stream = buffer.into_inner().unwrap();
     /// ```
-    pub fn into_inner(mut self) -> core::result::Result<W, IntoInnerError<BufWriter<W, S>>> {
+    pub fn into_inner(mut self) -> core::result::Result<W, IntoInnerError<Self>> {
         match self.flush_buf() {
             Err(e) => Err(IntoInnerError(self, e)),
             Ok(()) => Ok(self.inner.take().unwrap()),
@@ -701,7 +701,7 @@ impl<W> IntoInnerError<W> {
     ///     }
     /// };
     /// ```
-    pub fn error(&self) -> &Error {
+    pub const fn error(&self) -> &Error {
         &self.1
     }
 
@@ -741,7 +741,7 @@ impl<W> IntoInnerError<W> {
 }
 
 impl<W> From<IntoInnerError<W>> for Error {
-    fn from(iie: IntoInnerError<W>) -> Error {
+    fn from(iie: IntoInnerError<W>) -> Self {
         iie.1
     }
 }
@@ -767,19 +767,19 @@ pub(super) struct LineWriterShim<'a, W: Write, const S: usize> {
 }
 
 impl<'a, W: Write, const S: usize> LineWriterShim<'a, W, S> {
-    pub fn new(buffer: &'a mut BufWriter<W, S>) -> Self {
+    pub const fn new(buffer: &'a mut BufWriter<W, S>) -> Self {
         Self { buffer }
     }
 
     /// Get a mutable reference to the inner writer (that is, the writer
     /// wrapped by the BufWriter). Be careful with this writer, as writes to
     /// it will bypass the buffer.
-    fn inner_mut(&mut self) -> &mut W {
+    const fn inner_mut(&mut self) -> &mut W {
         self.buffer.get_mut()
     }
 
     /// Get the content currently buffered in self.buffer
-    fn buffered(&self) -> &[u8] {
+    const fn buffered(&self) -> &[u8] {
         self.buffer.buffer()
     }
 
@@ -1001,8 +1001,8 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn new(inner: W) -> LineWriter<W, S> {
-        LineWriter {
+    pub const fn new(inner: W) -> Self {
+        Self {
             inner: BufWriter::new(inner),
         }
     }
@@ -1023,7 +1023,7 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_ref(&self) -> &W {
+    pub const fn get_ref(&self) -> &W {
         self.inner.get_ref()
     }
 
@@ -1047,7 +1047,7 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_mut(&mut self) -> &mut W {
+    pub const fn get_mut(&mut self) -> &mut W {
         self.inner.get_mut()
     }
 
@@ -1074,10 +1074,10 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn into_inner(self) -> core::result::Result<W, IntoInnerError<LineWriter<W, S>>> {
+    pub fn into_inner(self) -> core::result::Result<W, IntoInnerError<Self>> {
         self.inner
             .into_inner()
-            .map_err(|IntoInnerError(buf, e)| IntoInnerError(LineWriter { inner: buf }, e))
+            .map_err(|IntoInnerError(buf, e)| IntoInnerError(Self { inner: buf }, e))
     }
 }
 

@@ -534,8 +534,8 @@ pub struct Initializer(bool);
 impl Initializer {
     /// Returns a new `Initializer` which will zero out buffers.
     #[inline]
-    pub fn zeroing() -> Initializer {
-        Initializer(true)
+    pub const fn zeroing() -> Self {
+        Self(true)
     }
 
     /// Returns a new `Initializer` which will not zero out buffers.
@@ -547,19 +547,19 @@ impl Initializer {
     /// the method accurately reflects the number of bytes that have been
     /// written to the head of the buffer.
     #[inline]
-    pub unsafe fn nop() -> Initializer {
-        Initializer(false)
+    pub const unsafe fn nop() -> Self {
+        Self(false)
     }
 
     /// Indicates if a buffer should be initialized.
     #[inline]
-    pub fn should_initialize(&self) -> bool {
+    pub const fn should_initialize(&self) -> bool {
         self.0
     }
 
     /// Initializes a buffer if necessary.
     #[inline]
-    pub fn initialize(&self, buf: &mut [u8]) {
+    pub const fn initialize(&self, buf: &mut [u8]) {
         if self.should_initialize() {
             unsafe { core::ptr::write_bytes(buf.as_mut_ptr(), 0, buf.len()) }
         }
@@ -1087,7 +1087,7 @@ impl<T, U> Chain<T, U> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_ref(&self) -> (&T, &U) {
+    pub const fn get_ref(&self) -> (&T, &U) {
         (&self.first, &self.second)
     }
 
@@ -1113,7 +1113,7 @@ impl<T, U> Chain<T, U> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_mut(&mut self) -> (&mut T, &mut U) {
+    pub const fn get_mut(&mut self) -> (&mut T, &mut U) {
         (&mut self.first, &mut self.second)
     }
 }
@@ -1139,11 +1139,13 @@ impl<T: Read, U: Read> Read for Chain<T, U> {
     }
 
     unsafe fn initializer(&self) -> Initializer {
-        let initializer = self.first.initializer();
-        if initializer.should_initialize() {
-            initializer
-        } else {
-            self.second.initializer()
+        unsafe {
+            let initializer = self.first.initializer();
+            if initializer.should_initialize() {
+                initializer
+            } else {
+                self.second.initializer()
+            }
         }
     }
 }
@@ -1208,7 +1210,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn limit(&self) -> u64 {
+    pub const fn limit(&self) -> u64 {
         self.limit
     }
 
@@ -1235,7 +1237,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn set_limit(&mut self, limit: u64) {
+    pub const fn set_limit(&mut self, limit: u64) {
         self.limit = limit;
     }
 
@@ -1283,7 +1285,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_ref(&self) -> &T {
+    pub const fn get_ref(&self) -> &T {
         &self.inner
     }
 
@@ -1311,7 +1313,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_mut(&mut self) -> &mut T {
+    pub const fn get_mut(&mut self) -> &mut T {
         &mut self.inner
     }
 }
@@ -1330,7 +1332,7 @@ impl<T: Read> Read for Take<T> {
     }
 
     unsafe fn initializer(&self) -> Initializer {
-        self.inner.initializer()
+        unsafe { self.inner.initializer() }
     }
 
     #[cfg(feature = "alloc")]
