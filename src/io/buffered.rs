@@ -3,27 +3,27 @@
 use crate::io::{BufRead, Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
 use core::{cmp, fmt};
 
-/// The `BufReader<R, S>` struct adds buffering to any reader.
+/// The [`BufReader<R, S>`] struct adds buffering to any reader.
 ///
 /// It can be excessively inefficient to work directly with a [`Read`] instance.
 /// For example, every call to [`read`][`TcpStream::read`] on [`TcpStream`]
 /// results in a system call. A `BufReader<R, S>` performs large, infrequent reads on
 /// the underlying [`Read`] and maintains an in-memory buffer of the results.
 ///
-/// `BufReader<R, S>` can improve the speed of programs that make *small* and
+/// [`BufReader<R, S>`] can improve the speed of programs that make *small* and
 /// *repeated* read calls to the same file or network socket. It does not
 /// help when reading very large amounts at once, or reading just one or a few
 /// times. It also provides no advantage when reading from a source that is
-/// already in memory, like a <code>[Vec]<u8></code>.
+/// already in memory, like a [`Vec<u8>`](Vec).
 ///
-/// When the `BufReader<R, S>` is dropped, the contents of its buffer will be
-/// discarded. Creating multiple instances of a `BufReader<R, S>` on the same
+/// When the [`BufReader<R, S>`] is dropped, the contents of its buffer will be
+/// discarded. Creating multiple instances of a [`BufReader<R, S>`] on the same
 /// stream can cause data loss. Reading from the underlying reader after
 /// unwrapping the `BufReader<R, S>` with [`BufReader::into_inner`] can also cause
 /// data loss.
 ///
 /// [`TcpStream::read`]: Read::read
-/// [`TcpStream`]: crate::net::TcpStream
+/// [`TcpStream`]: https://doc.rust-lang.org/std/net/struct.TcpStream.html
 ///
 /// # Examples
 ///
@@ -50,7 +50,7 @@ pub struct BufReader<R, const S: usize> {
 }
 
 impl<R: Read, const S: usize> BufReader<R, S> {
-    /// Creates a new `BufReader<R, S>` with a default buffer capacity. The default is currently 8 KB,
+    /// Creates a new [`BufReader<R, S>`] with a default buffer capacity. The default is currently 8 KB,
     /// but may change in the future.
     ///
     /// # Examples
@@ -252,7 +252,7 @@ where
 impl<R: Seek, const S: usize> Seek for BufReader<R, S> {
     /// Seek to an offset, in bytes, in the underlying reader.
     ///
-    /// The position used for seeking with <code>[SeekFrom::Current](_)</code> is the
+    /// The position used for seeking with `SeekFrom::Current(_)` is the
     /// position the underlying reader would be at if the `BufReader<R, S>` had no
     /// internal buffer.
     ///
@@ -261,15 +261,16 @@ impl<R: Seek, const S: usize> Seek for BufReader<R, S> {
     /// [`BufReader::into_inner()`] immediately after a seek yields the underlying reader
     /// at the same position.
     ///
-    /// To seek without discarding the internal buffer, use [`BufReader::seek_relative`].
+    /// Note: `seek_relative` is not available in this implementation.
     ///
     /// See [`std::Seek`] for more details.
     ///
-    /// Note: In the edge case where you're seeking with <code>[SeekFrom::Current](n)</code>
+    /// Note: In the edge case where you're seeking with
+    /// [`SeekFrom::Current(n)`][SeekFrom::Current]
     /// where `n` minus the internal buffer length overflows an `i64`, two
     /// seeks will be performed instead of one. If the second seek returns
     /// [`Err`], the underlying reader will be left at the same position it would
-    /// have if you called `seek` with <code>[SeekFrom::Current](0)</code>.
+    /// have if you called `seek` with [`SeekFrom::Current(0)`][SeekFrom::Current].
     ///
     /// [`std::Seek`]: Seek
     fn seek(&mut self, pos: SeekFrom) -> Result<u64> {
@@ -310,7 +311,7 @@ impl<R: Seek, const S: usize> Seek for BufReader<R, S> {
 /// *repeated* write calls to the same file or network socket. It does not
 /// help when writing very large amounts at once, or writing just one or a few
 /// times. It also provides no advantage when writing to a destination that is
-/// in memory, like a [`Vec`]<u8>`.
+/// in memory, like a `Vec<u8>`.
 ///
 /// It is critical to call [`flush`] before `BufWriter<W>` is dropped. Though
 /// dropping will attempt to flush the contents of the buffer, any errors
@@ -356,7 +357,7 @@ impl<R: Seek, const S: usize> Seek for BufReader<R, S> {
 /// the `stream` is flushed.
 ///
 /// [`TcpStream::write`]: Write::write
-/// [`TcpStream`]: crate::net::TcpStream
+/// [`TcpStream`]: https://doc.rust-lang.org/std/net/struct.TcpStream.html
 /// [`flush`]: Write::flush
 pub struct BufWriter<W: Write, const S: usize> {
     inner: Option<W>,

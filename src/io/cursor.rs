@@ -10,7 +10,7 @@ use core::cmp;
 /// that does actual I/O.
 ///
 /// The standard library implements some I/O traits on various types which
-/// are commonly used as a buffer, like <code>Cursor<[Vec]<u8>></code> and
+/// are commonly used as a buffer, like `Cursor<Vec<u8>>` and
 /// <code>Cursor<[&[u8]][bytes]></code>.
 ///
 /// # Examples
@@ -19,8 +19,8 @@ use core::cmp;
 /// code, but use an in-memory buffer in our tests. We can do this with
 /// `Cursor`:
 ///
-/// [bytes]: crate::slice
-/// [`File`]: crate::fs::File
+/// [bytes]: https://doc.rust-lang.org/std/primitive.slice.html
+/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
 ///
 /// ```
 /// use std::io::prelude::*;
@@ -73,8 +73,8 @@ pub struct Cursor<T> {
 impl<T> Cursor<T> {
     /// Creates a new cursor wrapping the provided underlying in-memory buffer.
     ///
-    /// Cursor initial position is `0` even if underlying buffer (e.g., [`Vec`])
-    /// is not empty. So writing to cursor starts with overwriting [`Vec`]
+    /// Cursor initial position is `0` even if underlying buffer (e.g., `Vec`)
+    /// is not empty. So writing to cursor starts with overwriting `Vec`
     /// content, not with appending to it.
     ///
     /// # Examples

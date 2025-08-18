@@ -98,7 +98,7 @@ where
 ///
 /// Please note that each call to [`read()`] may involve a system call, and
 /// therefore, using something that implements [`BufRead`], such as
-/// [`BufReader`], will be more efficient.
+/// `BufReader`, will be more efficient.
 ///
 /// # Examples
 ///
@@ -149,8 +149,8 @@ where
 ///
 /// [`read()`]: Read::read
 /// [`&str`]: prim@str
-/// [`std::io`]: self
-/// [`File`]: crate::fs::File
+/// [`std::io`]: https://doc.rust-lang.org/std/io/index.html
+/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
 /// [slice]: ../../std/primitive.slice.html
 pub trait Read {
     /// Pull some bytes from this source into the specified buffer, returning
@@ -187,7 +187,7 @@ pub trait Read {
     /// before calling `read`. Calling `read` with an uninitialized `buf` (of the kind one
     /// obtains via [`MaybeUninit<T>`]) is not safe, and can lead to undefined behavior.
     ///
-    /// [`MaybeUninit<T>`]: crate::mem::MaybeUninit
+    /// [`MaybeUninit<T>`]: https://doc.rust-lang.org/std/mem/union.MaybeUninit.html
     ///
     /// # Errors
     ///
@@ -203,7 +203,7 @@ pub trait Read {
     /// [`File`]s implement `Read`:
     ///
     /// [`Ok(n)`]: Ok
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -248,7 +248,7 @@ pub trait Read {
     ///
     /// [`read()`]: Read::read
     /// [`Ok(0)`]: Ok
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -281,8 +281,7 @@ pub trait Read {
     /// buffers.
     ///
     /// If a `Read`er guarantees that it can work properly with uninitialized
-    /// memory, it should call [`Initializer::nop()`]. See the documentation for
-    /// [`Initializer`] for details.
+    /// memory, it can use an optimized initializer implementation.
     ///
     /// The behavior of this method must be independent of the state of the
     /// `Read`er - the method only takes `&self` so that it can be used through
@@ -332,7 +331,7 @@ pub trait Read {
     /// [`File`]s implement `Read`:
     ///
     /// [`read`]: Read::read
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -379,7 +378,7 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -414,7 +413,7 @@ pub trait Read {
     /// Transforms this `Read` instance to an [`Iterator`] over its bytes.
     ///
     /// The returned type implements [`Iterator`] where the `Item` is
-    /// <code>[Result]<[u8], [io::Error]></code>.
+    /// <code>[Result]<[u8], [Error]></code>.
     /// The yielded item is [`Ok`] if a byte was successfully read and [`Err`]
     /// otherwise. EOF is mapped to returning [`None`] from this iterator.
     ///
@@ -422,8 +421,8 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
-    /// [`Result`]: crate::result::Result
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
+    /// [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
     /// [`io::Error`]: self::Error
     ///
     /// ```no_run
@@ -457,7 +456,7 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -499,7 +498,7 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     /// [`Ok(0)`]: Ok
     /// [`read()`]: Read::read
     ///
@@ -585,7 +584,7 @@ impl Initializer {
 ///
 /// [`write`]: Write::write
 /// [`flush`]: Write::flush
-/// [`std::io`]: self
+/// [`std::io`]: https://doc.rust-lang.org/std/io/index.html
 ///
 /// # Examples
 ///
@@ -841,7 +840,7 @@ pub trait Write {
 ///
 /// [`File`]s implement `Seek`:
 ///
-/// [`File`]: crate::fs::File
+/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
 ///
 /// ```no_run
 /// use std::io;
@@ -944,15 +943,15 @@ impl<R: Read> Iterator for Bytes<R> {
 /// }
 /// ```
 ///
-/// If you have something that implements [`Read`], you can use the [`BufReader`
-/// type][`BufReader`] to turn it into a `BufRead`.
+/// If you have something that implements [`Read`], you can use the `BufReader`
+/// type to turn it into a `BufRead`.
 ///
 /// For example, [`File`] implements [`Read`], but not `BufRead`.
-/// [`BufReader`] to the rescue!
+/// `BufReader` to the rescue!
 ///
-/// [`File`]: crate::fs::File
-/// [`read_line`]: BufRead::read_line
-/// [`lines`]: BufRead::lines
+/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
+/// [`read_line`]: https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_line
+/// [`lines`]: https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines
 ///
 /// ```no_run
 /// use std::io::{self, BufReader};

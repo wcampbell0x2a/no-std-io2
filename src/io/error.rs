@@ -18,8 +18,8 @@ use core::{convert::From, fmt, result};
 ///
 /// [`std::io`]: crate::io
 /// [`io::Error`]: Error
-/// [`Result`]: crate::result::Result
-/// [prelude]: crate::prelude
+/// [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
+/// [prelude]: https://doc.rust-lang.org/std/prelude/index.html
 ///
 /// # Examples
 ///
@@ -146,7 +146,7 @@ pub enum ErrorKind {
     /// Errors that are `Other` now may move to a different or a new
     /// [`ErrorKind`] variant in the future. It is not recommended to match
     /// an error against `Other` and to expect any additional characteristics,
-    /// e.g., a specific [`Error::raw_os_error`] return value.
+    /// e.g., a specific OS error return value.
     Other,
 
     /// An error returned when an operation could not be completed because an
