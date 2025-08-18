@@ -1,6 +1,6 @@
-use core::{convert::From, fmt, result};
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
+use core::{convert::From, fmt, result};
 
 /// A specialized [`Result`] type for I/O operations.
 ///
@@ -18,8 +18,8 @@ use alloc::boxed::Box;
 ///
 /// [`std::io`]: crate::io
 /// [`io::Error`]: Error
-/// [`Result`]: crate::result::Result
-/// [prelude]: crate::prelude
+/// [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
+/// [prelude]: https://doc.rust-lang.org/std/prelude/index.html
 ///
 /// # Examples
 ///
@@ -146,7 +146,7 @@ pub enum ErrorKind {
     /// Errors that are `Other` now may move to a different or a new
     /// [`ErrorKind`] variant in the future. It is not recommended to match
     /// an error against `Other` and to expect any additional characteristics,
-    /// e.g., a specific [`Error::raw_os_error`] return value.
+    /// e.g., a specific OS error return value.
     Other,
 
     /// An error returned when an operation could not be completed because an
@@ -174,29 +174,29 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub(crate) fn as_str(&self) -> &'static str {
+    pub(crate) const fn as_str(&self) -> &'static str {
         match *self {
-            ErrorKind::NotFound => "entity not found",
-            ErrorKind::PermissionDenied => "permission denied",
-            ErrorKind::ConnectionRefused => "connection refused",
-            ErrorKind::ConnectionReset => "connection reset",
-            ErrorKind::ConnectionAborted => "connection aborted",
-            ErrorKind::NotConnected => "not connected",
-            ErrorKind::AddrInUse => "address in use",
-            ErrorKind::AddrNotAvailable => "address not available",
-            ErrorKind::BrokenPipe => "broken pipe",
-            ErrorKind::AlreadyExists => "entity already exists",
-            ErrorKind::WouldBlock => "operation would block",
-            ErrorKind::InvalidInput => "invalid input parameter",
-            ErrorKind::InvalidData => "invalid data",
-            ErrorKind::TimedOut => "timed out",
-            ErrorKind::WriteZero => "write zero",
-            ErrorKind::Interrupted => "operation interrupted",
-            ErrorKind::Other => "other os error",
-            ErrorKind::UnexpectedEof => "unexpected end of file",
-            ErrorKind::Unsupported => "unsupported I/O error",
-            ErrorKind::OutOfMemory => "out of memory",
-            ErrorKind::Uncategorized => "uncategorized",
+            Self::NotFound => "entity not found",
+            Self::PermissionDenied => "permission denied",
+            Self::ConnectionRefused => "connection refused",
+            Self::ConnectionReset => "connection reset",
+            Self::ConnectionAborted => "connection aborted",
+            Self::NotConnected => "not connected",
+            Self::AddrInUse => "address in use",
+            Self::AddrNotAvailable => "address not available",
+            Self::BrokenPipe => "broken pipe",
+            Self::AlreadyExists => "entity already exists",
+            Self::WouldBlock => "operation would block",
+            Self::InvalidInput => "invalid input parameter",
+            Self::InvalidData => "invalid data",
+            Self::TimedOut => "timed out",
+            Self::WriteZero => "write zero",
+            Self::Interrupted => "operation interrupted",
+            Self::Other => "other os error",
+            Self::UnexpectedEof => "unexpected end of file",
+            Self::Unsupported => "unsupported I/O error",
+            Self::OutOfMemory => "out of memory",
+            Self::Uncategorized => "uncategorized",
         }
     }
 }
@@ -260,8 +260,8 @@ impl From<ErrorKind> for Error {
     /// assert_eq!("entity not found", format!("{}", error));
     /// ```
     #[inline]
-    fn from(kind: ErrorKind) -> Error {
-        Error {
+    fn from(kind: ErrorKind) -> Self {
+        Self {
             repr: Repr::Simple(kind),
         }
     }
@@ -308,7 +308,7 @@ impl Error {
     /// let custom_error2 = Error::new(ErrorKind::Interrupted, custom_error.into_inner().unwrap());
     /// ```
     #[cfg(not(feature = "alloc"))]
-    pub fn new(kind: ErrorKind, error: &'static str) -> Error {
+    pub const fn new(kind: ErrorKind, error: &'static str) -> Self {
         Self::_new(kind, error)
     }
 
@@ -365,8 +365,8 @@ impl Error {
     /// let custom_error2 = Error::other(custom_error);
     /// ```
     #[cfg(not(feature = "alloc"))]
-    pub fn other(error: &'static str) -> Error {
-        Self::_new(ErrorKind::Other, error.into())
+    pub const fn other(error: &'static str) -> Self {
+        Self::_new(ErrorKind::Other, error)
     }
 
     /// Creates a new I/O error from an arbitrary error payload.
@@ -395,8 +395,8 @@ impl Error {
     }
 
     #[cfg(not(feature = "alloc"))]
-    fn _new(kind: ErrorKind, error: &'static str) -> Error {
-        Error {
+    const fn _new(kind: ErrorKind, error: &'static str) -> Self {
+        Self {
             repr: Repr::Custom(Custom { kind, error }),
         }
     }
@@ -451,7 +451,7 @@ impl Error {
     #[cfg(not(feature = "alloc"))]
     #[must_use]
     #[inline]
-    pub fn get_ref(&self) -> Option<&&'static str> {
+    pub const fn get_ref(&self) -> Option<&&'static str> {
         match self.repr {
             Repr::Simple(..) => None,
             Repr::Custom(ref c) => Some(&c.error),
@@ -536,7 +536,7 @@ impl Error {
     #[cfg(not(feature = "alloc"))]
     #[must_use = "`self` will be dropped if the result is not used"]
     #[inline]
-    pub fn into_inner(self) -> Option<&'static str> {
+    pub const fn into_inner(self) -> Option<&'static str> {
         match self.repr {
             Repr::Simple(..) => None,
             Repr::Custom(c) => Some(c.error),
@@ -609,7 +609,7 @@ impl Error {
     ///     emit_error();
     /// }
     /// ```
-    pub fn kind(&self) -> ErrorKind {
+    pub const fn kind(&self) -> ErrorKind {
         match self.repr {
             Repr::Custom(ref c) => c.kind,
             Repr::Simple(kind) => kind,
@@ -620,8 +620,8 @@ impl Error {
 impl fmt::Debug for Repr {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            Repr::Custom(ref c) => fmt::Debug::fmt(&c, fmt),
-            Repr::Simple(kind) => fmt.debug_tuple("Kind").field(&kind).finish(),
+            Self::Custom(ref c) => fmt::Debug::fmt(&c, fmt),
+            Self::Simple(kind) => fmt.debug_tuple("Kind").field(&kind).finish(),
         }
     }
 }
@@ -635,7 +635,7 @@ impl fmt::Display for Error {
     }
 }
 
-fn _assert_error_is_sync_send() {
-    fn _is_sync_send<T: Sync + Send>() {}
+const fn _assert_error_is_sync_send() {
+    const fn _is_sync_send<T: Sync + Send>() {}
     _is_sync_send::<Error>();
 }

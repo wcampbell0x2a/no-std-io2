@@ -98,7 +98,7 @@ where
 ///
 /// Please note that each call to [`read()`] may involve a system call, and
 /// therefore, using something that implements [`BufRead`], such as
-/// [`BufReader`], will be more efficient.
+/// `BufReader`, will be more efficient.
 ///
 /// # Examples
 ///
@@ -149,8 +149,8 @@ where
 ///
 /// [`read()`]: Read::read
 /// [`&str`]: prim@str
-/// [`std::io`]: self
-/// [`File`]: crate::fs::File
+/// [`std::io`]: https://doc.rust-lang.org/std/io/index.html
+/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
 /// [slice]: ../../std/primitive.slice.html
 pub trait Read {
     /// Pull some bytes from this source into the specified buffer, returning
@@ -187,7 +187,7 @@ pub trait Read {
     /// before calling `read`. Calling `read` with an uninitialized `buf` (of the kind one
     /// obtains via [`MaybeUninit<T>`]) is not safe, and can lead to undefined behavior.
     ///
-    /// [`MaybeUninit<T>`]: crate::mem::MaybeUninit
+    /// [`MaybeUninit<T>`]: https://doc.rust-lang.org/std/mem/union.MaybeUninit.html
     ///
     /// # Errors
     ///
@@ -203,7 +203,7 @@ pub trait Read {
     /// [`File`]s implement `Read`:
     ///
     /// [`Ok(n)`]: Ok
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -248,7 +248,7 @@ pub trait Read {
     ///
     /// [`read()`]: Read::read
     /// [`Ok(0)`]: Ok
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -281,8 +281,7 @@ pub trait Read {
     /// buffers.
     ///
     /// If a `Read`er guarantees that it can work properly with uninitialized
-    /// memory, it should call [`Initializer::nop()`]. See the documentation for
-    /// [`Initializer`] for details.
+    /// memory, it can use an optimized initializer implementation.
     ///
     /// The behavior of this method must be independent of the state of the
     /// `Read`er - the method only takes `&self` so that it can be used through
@@ -332,7 +331,7 @@ pub trait Read {
     /// [`File`]s implement `Read`:
     ///
     /// [`read`]: Read::read
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -379,7 +378,7 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -414,7 +413,7 @@ pub trait Read {
     /// Transforms this `Read` instance to an [`Iterator`] over its bytes.
     ///
     /// The returned type implements [`Iterator`] where the `Item` is
-    /// [`Result`]`<`[`u8`]`, `[`io::Error`]`>`.
+    /// <code>[Result]<[u8], [Error]></code>.
     /// The yielded item is [`Ok`] if a byte was successfully read and [`Err`]
     /// otherwise. EOF is mapped to returning [`None`] from this iterator.
     ///
@@ -422,8 +421,8 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
-    /// [`Result`]: crate::result::Result
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
+    /// [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
     /// [`io::Error`]: self::Error
     ///
     /// ```no_run
@@ -457,7 +456,7 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     ///
     /// ```no_run
     /// use std::io;
@@ -499,7 +498,7 @@ pub trait Read {
     ///
     /// [`File`]s implement `Read`:
     ///
-    /// [`File`]: crate::fs::File
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     /// [`Ok(0)`]: Ok
     /// [`read()`]: Read::read
     ///
@@ -534,8 +533,8 @@ pub struct Initializer(bool);
 impl Initializer {
     /// Returns a new `Initializer` which will zero out buffers.
     #[inline]
-    pub fn zeroing() -> Initializer {
-        Initializer(true)
+    pub const fn zeroing() -> Self {
+        Self(true)
     }
 
     /// Returns a new `Initializer` which will not zero out buffers.
@@ -547,19 +546,19 @@ impl Initializer {
     /// the method accurately reflects the number of bytes that have been
     /// written to the head of the buffer.
     #[inline]
-    pub unsafe fn nop() -> Initializer {
-        Initializer(false)
+    pub const unsafe fn nop() -> Self {
+        Self(false)
     }
 
     /// Indicates if a buffer should be initialized.
     #[inline]
-    pub fn should_initialize(&self) -> bool {
+    pub const fn should_initialize(&self) -> bool {
         self.0
     }
 
     /// Initializes a buffer if necessary.
     #[inline]
-    pub fn initialize(&self, buf: &mut [u8]) {
+    pub const fn initialize(&self, buf: &mut [u8]) {
         if self.should_initialize() {
             unsafe { core::ptr::write_bytes(buf.as_mut_ptr(), 0, buf.len()) }
         }
@@ -585,7 +584,7 @@ impl Initializer {
 ///
 /// [`write`]: Write::write
 /// [`flush`]: Write::flush
-/// [`std::io`]: self
+/// [`std::io`]: https://doc.rust-lang.org/std/io/index.html
 ///
 /// # Examples
 ///
@@ -841,7 +840,7 @@ pub trait Write {
 ///
 /// [`File`]s implement `Seek`:
 ///
-/// [`File`]: crate::fs::File
+/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
 ///
 /// ```no_run
 /// use std::io;
@@ -944,15 +943,15 @@ impl<R: Read> Iterator for Bytes<R> {
 /// }
 /// ```
 ///
-/// If you have something that implements [`Read`], you can use the [`BufReader`
-/// type][`BufReader`] to turn it into a `BufRead`.
+/// If you have something that implements [`Read`], you can use the `BufReader`
+/// type to turn it into a `BufRead`.
 ///
 /// For example, [`File`] implements [`Read`], but not `BufRead`.
-/// [`BufReader`] to the rescue!
+/// `BufReader` to the rescue!
 ///
-/// [`File`]: crate::fs::File
-/// [`read_line`]: BufRead::read_line
-/// [`lines`]: BufRead::lines
+/// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
+/// [`read_line`]: https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_line
+/// [`lines`]: https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines
 ///
 /// ```no_run
 /// use std::io::{self, BufReader};
@@ -1087,7 +1086,7 @@ impl<T, U> Chain<T, U> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_ref(&self) -> (&T, &U) {
+    pub const fn get_ref(&self) -> (&T, &U) {
         (&self.first, &self.second)
     }
 
@@ -1113,7 +1112,7 @@ impl<T, U> Chain<T, U> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_mut(&mut self) -> (&mut T, &mut U) {
+    pub const fn get_mut(&mut self) -> (&mut T, &mut U) {
         (&mut self.first, &mut self.second)
     }
 }
@@ -1139,11 +1138,13 @@ impl<T: Read, U: Read> Read for Chain<T, U> {
     }
 
     unsafe fn initializer(&self) -> Initializer {
-        let initializer = self.first.initializer();
-        if initializer.should_initialize() {
-            initializer
-        } else {
-            self.second.initializer()
+        unsafe {
+            let initializer = self.first.initializer();
+            if initializer.should_initialize() {
+                initializer
+            } else {
+                self.second.initializer()
+            }
         }
     }
 }
@@ -1152,7 +1153,7 @@ impl<T: BufRead, U: BufRead> BufRead for Chain<T, U> {
     fn fill_buf(&mut self) -> Result<&[u8]> {
         if !self.done_first {
             match self.first.fill_buf()? {
-                buf if buf.is_empty() => {
+                [] => {
                     self.done_first = true;
                 }
                 buf => return Ok(buf),
@@ -1208,7 +1209,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn limit(&self) -> u64 {
+    pub const fn limit(&self) -> u64 {
         self.limit
     }
 
@@ -1235,7 +1236,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn set_limit(&mut self, limit: u64) {
+    pub const fn set_limit(&mut self, limit: u64) {
         self.limit = limit;
     }
 
@@ -1283,7 +1284,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_ref(&self) -> &T {
+    pub const fn get_ref(&self) -> &T {
         &self.inner
     }
 
@@ -1311,7 +1312,7 @@ impl<T> Take<T> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn get_mut(&mut self) -> &mut T {
+    pub const fn get_mut(&mut self) -> &mut T {
         &mut self.inner
     }
 }
@@ -1330,7 +1331,7 @@ impl<T: Read> Read for Take<T> {
     }
 
     unsafe fn initializer(&self) -> Initializer {
-        self.inner.initializer()
+        unsafe { self.inner.initializer() }
     }
 
     #[cfg(feature = "alloc")]

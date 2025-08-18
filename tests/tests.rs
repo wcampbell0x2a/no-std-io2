@@ -199,7 +199,7 @@ fn cmp_bufread<Br1: BufRead, Br2: BufRead>(mut br1: Br1, mut br2: Br2, exp: &[u8
     }
     assert_eq!(br1.fill_buf().unwrap().len(), 0);
     assert_eq!(br2.fill_buf().unwrap().len(), 0);
-    assert_eq!(&cat[..], &exp[..])
+    assert_eq!(&cat[..], exp)
 }
 
 #[test]
@@ -283,6 +283,7 @@ fn chain_bufread() {
 
 // A simple example reader which uses the default implementation of
 // read_to_end.
+#[expect(unused)]
 struct ExampleSliceReader<'a> {
     slice: &'a [u8],
 }
@@ -408,7 +409,7 @@ impl<'a> Read for ExampleSliceReader<'a> {
 
 /// Create a new writer that reads from at most `n_bufs` and reads
 /// `per_call` bytes (in total) per call to write.
-fn test_writer() -> TestWriter {
+const fn test_writer() -> TestWriter {
     TestWriter {
         written: Vec::new(),
         per_call: 2,

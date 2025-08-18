@@ -2,13 +2,10 @@ use core::mem::MaybeUninit;
 
 use crate::io::{ErrorKind, Read, Write};
 
-pub fn copy<R: ?Sized, W: ?Sized, const S: usize>(
-    reader: &mut R,
-    writer: &mut W,
-) -> crate::io::Result<u64>
+pub fn copy<R, W, const S: usize>(reader: &mut R, writer: &mut W) -> crate::io::Result<u64>
 where
-    R: Read,
-    W: Write,
+    R: Read + ?Sized,
+    W: Write + ?Sized,
 {
     let mut buf = MaybeUninit::<[u8; S]>::uninit();
     // FIXME: #42788
