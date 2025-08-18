@@ -414,7 +414,7 @@ pub trait Read {
     /// Transforms this `Read` instance to an [`Iterator`] over its bytes.
     ///
     /// The returned type implements [`Iterator`] where the `Item` is
-    /// [`Result`]`<`[`u8`]`, `[`io::Error`]`>`.
+    /// <code>[Result]<[u8], [io::Error]></code>.
     /// The yielded item is [`Ok`] if a byte was successfully read and [`Err`]
     /// otherwise. EOF is mapped to returning [`None`] from this iterator.
     ///

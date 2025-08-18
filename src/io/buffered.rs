@@ -14,7 +14,7 @@ use core::{cmp, fmt};
 /// *repeated* read calls to the same file or network socket. It does not
 /// help when reading very large amounts at once, or reading just one or a few
 /// times. It also provides no advantage when reading from a source that is
-/// already in memory, like a [`Vec`]`<u8>`.
+/// already in memory, like a <code>[Vec]<u8></code>.
 ///
 /// When the `BufReader<R, S>` is dropped, the contents of its buffer will be
 /// discarded. Creating multiple instances of a `BufReader<R, S>` on the same
@@ -252,7 +252,7 @@ where
 impl<R: Seek, const S: usize> Seek for BufReader<R, S> {
     /// Seek to an offset, in bytes, in the underlying reader.
     ///
-    /// The position used for seeking with [`SeekFrom::Current`]`(_)` is the
+    /// The position used for seeking with <code>[SeekFrom::Current](_)</code> is the
     /// position the underlying reader would be at if the `BufReader<R, S>` had no
     /// internal buffer.
     ///
@@ -265,11 +265,11 @@ impl<R: Seek, const S: usize> Seek for BufReader<R, S> {
     ///
     /// See [`std::Seek`] for more details.
     ///
-    /// Note: In the edge case where you're seeking with [`SeekFrom::Current`]`(n)`
+    /// Note: In the edge case where you're seeking with <code>[SeekFrom::Current](n)</code>
     /// where `n` minus the internal buffer length overflows an `i64`, two
     /// seeks will be performed instead of one. If the second seek returns
     /// [`Err`], the underlying reader will be left at the same position it would
-    /// have if you called `seek` with [`SeekFrom::Current`]`(0)`.
+    /// have if you called `seek` with <code>[SeekFrom::Current](0)</code>.
     ///
     /// [`std::Seek`]: Seek
     fn seek(&mut self, pos: SeekFrom) -> Result<u64> {
@@ -640,9 +640,9 @@ impl<W: Write, const S: usize> Write for BufWriter<W, S> {
     }
 }
 
-impl<W: Write, const S: usize> fmt::Debug for BufWriter<W, S>
+impl<W, const S: usize> fmt::Debug for BufWriter<W, S>
 where
-    W: fmt::Debug,
+    W: fmt::Debug + Write,
 {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt.debug_struct("BufWriter")
@@ -867,10 +867,8 @@ impl<'a, W: Write, const S: usize> Write for LineWriterShim<'a, W, S> {
         } else {
             let scan_area = &buf[flushed..];
             let scan_area = &scan_area[..self.buffer.capacity()];
-            match memchr::memrchr(b'\n', scan_area) {
-                Some(newline_idx) => &scan_area[..newline_idx + 1],
-                None => scan_area,
-            }
+            memchr::memrchr(b'\n', scan_area)
+                .map_or(scan_area, |newline_idx| &scan_area[..newline_idx + 1])
         };
 
         let buffered = self.buffer.write_to_buf(tail);
@@ -1099,9 +1097,9 @@ impl<W: Write, const S: usize> Write for LineWriter<W, S> {
     }
 }
 
-impl<W: Write, const S: usize> fmt::Debug for LineWriter<W, S>
+impl<W, const S: usize> fmt::Debug for LineWriter<W, S>
 where
-    W: fmt::Debug,
+    W: fmt::Debug + Write,
 {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt.debug_struct("LineWriter")

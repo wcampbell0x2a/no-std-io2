@@ -5,13 +5,13 @@ use core::cmp;
 /// [`Seek`] implementation.
 ///
 /// `Cursor`s are used with in-memory buffers, anything implementing
-/// [`AsRef`]`<[u8]>`, to allow them to implement [`Read`] and/or [`Write`],
+/// <code>[AsRef]<[u8]></code>, to allow them to implement [`Read`] and/or [`Write`],
 /// allowing these buffers to be used anywhere you might use a reader or writer
 /// that does actual I/O.
 ///
 /// The standard library implements some I/O traits on various types which
-/// are commonly used as a buffer, like `Cursor<`[`Vec`]`<u8>>` and
-/// `Cursor<`[`&[u8]`][bytes]`>`.
+/// are commonly used as a buffer, like <code>Cursor<[Vec]<u8>></code> and
+/// <code>Cursor<[&[u8]][bytes]></code>.
 ///
 /// # Examples
 ///

@@ -283,6 +283,7 @@ fn chain_bufread() {
 
 // A simple example reader which uses the default implementation of
 // read_to_end.
+#[expect(unused)]
 struct ExampleSliceReader<'a> {
     slice: &'a [u8],
 }
