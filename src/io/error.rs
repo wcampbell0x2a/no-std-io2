@@ -366,7 +366,7 @@ impl Error {
     /// ```
     #[cfg(not(feature = "alloc"))]
     pub fn other(error: &'static str) -> Error {
-        Self::_new(ErrorKind::Other, error.into())
+        Self::_new(ErrorKind::Other, error)
     }
 
     /// Creates a new I/O error from an arbitrary error payload.

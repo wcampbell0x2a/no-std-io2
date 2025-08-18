@@ -301,7 +301,7 @@ impl Write for Cursor<alloc::vec::Vec<u8>> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
     extern crate alloc;
     #[cfg(feature = "alloc")]
     #[test]
