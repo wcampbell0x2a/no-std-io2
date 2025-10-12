@@ -522,3 +522,52 @@ fn test_io_error_other() {
 //         }
 //     }
 // }
+
+#[test]
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+fn issue_5_bufwriter_write_small() {
+    use no_std_io2::io::BufWriter;
+
+    let writer = Vec::new();
+    let mut buf_writer: BufWriter<Vec<u8>, 8> = BufWriter::new(writer);
+
+    assert_eq!(buf_writer.write(b"no-").unwrap(), 3);
+    assert_eq!(buf_writer.write(b"std").unwrap(), 3);
+
+    buf_writer.flush().unwrap();
+    let result = buf_writer.into_inner().unwrap();
+    assert_eq!(result, b"no-std");
+}
+
+#[test]
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+fn issue_5_bufwriter_write_all_small() {
+    use no_std_io2::io::BufWriter;
+
+    let writer = Vec::new();
+    let mut buf_writer: BufWriter<Vec<u8>, 8> = BufWriter::new(writer);
+
+    buf_writer.write_all(b"no-").unwrap();
+    buf_writer.write_all(b"std").unwrap();
+
+    buf_writer.flush().unwrap();
+    let result = buf_writer.into_inner().unwrap();
+    assert_eq!(result, b"no-std");
+}
+
+#[test]
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+fn issue_5_bufwriter_buffer_overflow() {
+    use no_std_io2::io::BufWriter;
+
+    let writer = Vec::new();
+    let mut buf_writer: BufWriter<Vec<u8>, 8> = BufWriter::new(writer);
+
+    buf_writer.write_all(b"no-").unwrap();
+    buf_writer.write_all(b"std").unwrap();
+    buf_writer.write_all(b"-io").unwrap();
+
+    buf_writer.flush().unwrap();
+    let result = buf_writer.into_inner().unwrap();
+    assert_eq!(result, b"no-std-io");
+}

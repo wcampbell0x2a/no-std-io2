@@ -1,6 +1,6 @@
-use core::{convert::From, fmt, result};
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
+use core::{convert::From, fmt, result};
 
 /// A specialized [`Result`] type for I/O operations.
 ///

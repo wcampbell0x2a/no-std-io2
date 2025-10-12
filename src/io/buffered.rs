@@ -433,16 +433,21 @@ where
         struct BufGuard<'a, const S: usize> {
             buffer: &'a mut [u8; S],
             written: usize,
+            len: usize,
         }
 
         impl<'a, const S: usize> BufGuard<'a, S> {
-            fn new(buffer: &'a mut [u8; S]) -> Self {
-                Self { buffer, written: 0 }
+            fn new(buffer: &'a mut [u8; S], len: usize) -> Self {
+                Self {
+                    buffer,
+                    written: 0,
+                    len,
+                }
             }
 
             /// The unwritten part of the buffer
             fn remaining(&self) -> &[u8] {
-                &self.buffer[self.written..]
+                &self.buffer[self.written..self.len]
             }
 
             /// Flag some bytes as removed from the front of the buffer
@@ -452,21 +457,22 @@ where
 
             /// true if all of the bytes have been written
             fn done(&self) -> bool {
-                self.written >= self.buffer.len()
+                self.written >= self.len
             }
         }
 
         impl<const S: usize> Drop for BufGuard<'_, S> {
             fn drop(&mut self) {
                 if self.written > 0 {
-                    let mut new_buf = [0; S];
-                    new_buf.copy_from_slice(&self.buffer[self.written..]);
-                    *self.buffer = new_buf;
+                    let remaining = self.len - self.written;
+                    if remaining > 0 {
+                        self.buffer.copy_within(self.written..self.len, 0);
+                    }
                 }
             }
         }
 
-        let mut guard = BufGuard::new(&mut self.buf);
+        let mut guard = BufGuard::new(&mut self.buf, self.len);
         let inner = self.inner.as_mut().unwrap();
         while !guard.done() {
             self.panicked = true;
@@ -485,6 +491,7 @@ where
                 Err(e) => return Err(e),
             }
         }
+        self.len -= guard.written;
         Ok(())
     }
 
@@ -494,7 +501,7 @@ where
     fn write_to_buf(&mut self, buf: &[u8]) -> usize {
         let available = S - self.len;
         let amt_to_buffer = available.min(buf.len());
-        self.buf[available..].copy_from_slice(&buf[..amt_to_buffer]);
+        self.buf[self.len..self.len + amt_to_buffer].copy_from_slice(&buf[..amt_to_buffer]);
         self.len += amt_to_buffer;
         amt_to_buffer
     }
@@ -610,8 +617,8 @@ impl<W: Write, const S: usize> Write for BufWriter<W, S> {
             self.panicked = false;
             r
         } else {
-            self.buf.copy_from_slice(buf);
-            Ok(buf.len())
+            let amt = self.write_to_buf(buf);
+            Ok(amt)
         }
     }
 
@@ -630,7 +637,7 @@ impl<W: Write, const S: usize> Write for BufWriter<W, S> {
             self.panicked = false;
             r
         } else {
-            self.buf.copy_from_slice(buf);
+            self.write_to_buf(buf);
             Ok(())
         }
     }
