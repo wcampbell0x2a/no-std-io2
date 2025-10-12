@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.9.1] - 2025-10-12
+- Fix BufWriter panic [#19](https://github.com/wcampbell0x2a/no-std-io2/pull/19)
+
 ## [v0.9.0] - 2025-01-04
 - Support io errors with arbitrary payloads in "alloc" mode [#11](https://github.com/wcampbell0x2a/no-std-io2/pull/11)
 - Implement Write for `Cursor<Vec<u8>>` [#10](https://github.com/wcampbell0x2a/no-std-io2/pull/10)
