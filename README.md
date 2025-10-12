@@ -20,8 +20,6 @@ It is also a goal to achieve a true alloc-less experience, with opt-in alloc sup
 This crate works on `stable` with some limitations in functionality, and `nightly` without limitations by adding
 the relevant feature flag.
 
-This crate is `std` by default -- use no default features to get `no_std` mode.
-
 ## Usage
 
 ```toml
