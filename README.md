@@ -26,7 +26,7 @@ This crate is `std` by default -- use no default features to get `no_std` mode.
 
 ```toml
 [dependencies]
-no_std_io2 = "0.8"
+no_std_io2 = "0.9"
 ```
 
 Add the crate, use the things you would usually want from `std::io`, but instead from `no_std_io2::io`, and
