@@ -58,6 +58,63 @@ impl<B: BufRead + ?Sized> BufRead for &mut B {
     }
 }
 
+#[cfg(feature = "alloc")]
+impl<R: Read + ?Sized> Read for alloc::boxed::Box<R> {
+    #[inline]
+    fn read(&mut self, buf: &mut [u8]) -> Result<usize> {
+        (**self).read(buf)
+    }
+
+    #[inline]
+    fn read_exact(&mut self, buf: &mut [u8]) -> Result<()> {
+        (**self).read_exact(buf)
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<W: Write + ?Sized> Write for alloc::boxed::Box<W> {
+    #[inline]
+    fn write(&mut self, buf: &[u8]) -> Result<usize> {
+        (**self).write(buf)
+    }
+
+    #[inline]
+    fn flush(&mut self) -> Result<()> {
+        (**self).flush()
+    }
+
+    #[inline]
+    fn write_all(&mut self, buf: &[u8]) -> Result<()> {
+        (**self).write_all(buf)
+    }
+
+    #[inline]
+    fn write_fmt(&mut self, fmt: fmt::Arguments<'_>) -> Result<()> {
+        (**self).write_fmt(fmt)
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<S: Seek + ?Sized> Seek for alloc::boxed::Box<S> {
+    #[inline]
+    fn seek(&mut self, pos: SeekFrom) -> Result<u64> {
+        (**self).seek(pos)
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<B: BufRead + ?Sized> BufRead for alloc::boxed::Box<B> {
+    #[inline]
+    fn fill_buf(&mut self) -> Result<&[u8]> {
+        (**self).fill_buf()
+    }
+
+    #[inline]
+    fn consume(&mut self, amt: usize) {
+        (**self).consume(amt)
+    }
+}
+
 // =============================================================================
 // In-memory buffer implementations
 

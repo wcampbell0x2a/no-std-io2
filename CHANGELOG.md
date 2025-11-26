@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.9.2] - 2025-11-28
+- Add `Box<Read>`, `Box<Write>`, `Box<Seek>`, `Box<BufRead>` [#22](https://github.com/wcampbell0x2a/no-std-io2/pull/22)
+
 ## [v0.9.1] - 2025-10-12
 - Fix BufWriter panic [#19](https://github.com/wcampbell0x2a/no-std-io2/pull/19)
 
