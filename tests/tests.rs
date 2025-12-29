@@ -255,31 +255,33 @@ fn chain_bufread() {
 //     Ok(())
 // }
 
-// #[test]
-// fn seek_position() -> io::Result<()> {
-//     // All `asserts` are duplicated here to make sure the method does not
-//     // change anything about the seek state.
-//     let mut c = Cursor::new(vec![0; 15]);
-//     assert_eq!(c.stream_position()?, 0);
-//     assert_eq!(c.stream_position()?, 0);
+#[test]
+fn seek_position() -> io::Result<()> {
+    use no_std_io2::io::{Seek, SeekFrom};
 
-//     c.seek(SeekFrom::End(0))?;
-//     assert_eq!(c.stream_position()?, 15);
-//     assert_eq!(c.stream_position()?, 15);
+    // All `asserts` are duplicated here to make sure the method does not
+    // change anything about the seek state.
+    let mut c = Cursor::new(vec![0; 15]);
+    assert_eq!(c.stream_position()?, 0);
+    assert_eq!(c.stream_position()?, 0);
 
-//     c.seek(SeekFrom::Start(7))?;
-//     c.seek(SeekFrom::Current(2))?;
-//     assert_eq!(c.stream_position()?, 9);
-//     assert_eq!(c.stream_position()?, 9);
+    c.seek(SeekFrom::End(0))?;
+    assert_eq!(c.stream_position()?, 15);
+    assert_eq!(c.stream_position()?, 15);
 
-//     c.seek(SeekFrom::End(-3))?;
-//     c.seek(SeekFrom::Current(1))?;
-//     c.seek(SeekFrom::Current(-5))?;
-//     assert_eq!(c.stream_position()?, 8);
-//     assert_eq!(c.stream_position()?, 8);
+    c.seek(SeekFrom::Start(7))?;
+    c.seek(SeekFrom::Current(2))?;
+    assert_eq!(c.stream_position()?, 9);
+    assert_eq!(c.stream_position()?, 9);
 
-//     Ok(())
-// }
+    c.seek(SeekFrom::End(-3))?;
+    c.seek(SeekFrom::Current(1))?;
+    c.seek(SeekFrom::Current(-5))?;
+    assert_eq!(c.stream_position()?, 8);
+    assert_eq!(c.stream_position()?, 8);
+
+    Ok(())
+}
 
 // A simple example reader which uses the default implementation of
 // read_to_end.
