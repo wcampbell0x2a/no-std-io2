@@ -871,6 +871,30 @@ pub trait Seek {
     ///
     /// Seeking to a negative offset is considered an error.
     fn seek(&mut self, pos: SeekFrom) -> Result<u64>;
+
+    /// Returns the current seek position from the start of the stream.
+    ///
+    /// This is equivalent to `self.seek(SeekFrom::Current(0))`.
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// use std::io::{self, Seek, SeekFrom};
+    /// use std::fs::File;
+    ///
+    /// fn main() -> io::Result<()> {
+    ///     let mut f = File::open("foo.txt")?;
+    ///     let pos = f.stream_position()?;
+    ///     assert_eq!(pos, 0);
+    ///     f.seek(SeekFrom::Start(42))?;
+    ///     let pos = f.stream_position()?;
+    ///     assert_eq!(pos, 42);
+    ///     Ok(())
+    /// }
+    /// ```
+    fn stream_position(&mut self) -> Result<u64> {
+        self.seek(SeekFrom::Current(0))
+    }
 }
 
 /// Enumeration of possible methods to seek within an I/O object.
