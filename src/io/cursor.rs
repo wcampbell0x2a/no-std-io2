@@ -278,7 +278,8 @@ fn vec_write_all(pos: usize, vec: &mut alloc::vec::Vec<u8>, buf: &[u8]) {
 
     let desired_capacity = pos.saturating_add(buf_len);
     if desired_capacity > vec.capacity() {
-        vec.reserve(vec.capacity() - desired_capacity);
+        vec.reserve(desired_capacity - vec.capacity());
+        // SAFETY: We have reserved enough capacity to hold the new data.
         unsafe {
             vec.as_mut_ptr().add(pos).copy_from(buf.as_ptr(), buf.len());
             vec.set_len(desired_capacity);
