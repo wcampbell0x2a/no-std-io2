@@ -271,11 +271,29 @@ impl Write for Cursor<&mut [u8]> {
     }
 }
 
+// matching the behaviour of std::io::Cursor<&mut Vec> and std::io::Cursor<Vec>
+#[cfg(feature = "alloc")]
+fn vec_write_all(pos: usize, vec: &mut alloc::vec::Vec<u8>, buf: &[u8]) {
+    let buf_len = buf.len();
+
+    let desired_capacity = pos.saturating_add(buf_len);
+    if desired_capacity > vec.capacity() {
+        vec.reserve(vec.capacity() - desired_capacity);
+        unsafe {
+            vec.as_mut_ptr().add(pos).copy_from(buf.as_ptr(), buf.len());
+            vec.set_len(desired_capacity);
+        }
+    } else {
+        vec.as_mut_slice()[pos..desired_capacity].copy_from_slice(buf);
+    }
+}
+
 #[cfg(feature = "alloc")]
 impl Write for Cursor<&mut alloc::vec::Vec<u8>> {
     #[inline]
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
-        self.inner.extend_from_slice(buf);
+        vec_write_all(self.pos as usize, self.inner, buf);
+        self.pos += buf.len() as u64;
         Ok(buf.len())
     }
 
@@ -289,7 +307,8 @@ impl Write for Cursor<&mut alloc::vec::Vec<u8>> {
 impl Write for Cursor<alloc::vec::Vec<u8>> {
     #[inline]
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
-        self.inner.extend_from_slice(buf);
+        vec_write_all(self.pos as usize, &mut self.inner, buf);
+        self.pos += buf.len() as u64;
         Ok(buf.len())
     }
 
