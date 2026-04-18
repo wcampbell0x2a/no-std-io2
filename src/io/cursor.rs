@@ -274,19 +274,11 @@ impl Write for Cursor<&mut [u8]> {
 // matching the behaviour of std::io::Cursor<&mut Vec> and std::io::Cursor<Vec>
 #[cfg(feature = "alloc")]
 fn vec_write_all(pos: usize, vec: &mut alloc::vec::Vec<u8>, buf: &[u8]) {
-    let buf_len = buf.len();
-
-    let desired_capacity = pos.saturating_add(buf_len);
-    if desired_capacity > vec.capacity() {
-        vec.reserve(desired_capacity - vec.capacity());
-        // SAFETY: We have reserved enough capacity to hold the new data.
-        unsafe {
-            vec.as_mut_ptr().add(pos).copy_from(buf.as_ptr(), buf.len());
-            vec.set_len(desired_capacity);
-        }
-    } else {
-        vec.as_mut_slice()[pos..desired_capacity].copy_from_slice(buf);
+    let desired_end = pos.saturating_add(buf.len());
+    if desired_end > vec.len() {
+        vec.resize(desired_end, 0);
     }
+    vec.as_mut_slice()[pos..desired_end].copy_from_slice(buf);
 }
 
 #[cfg(feature = "alloc")]
@@ -341,5 +333,29 @@ mod tests {
         let buf = [0x01, 0x02, 0x03];
         cursor.write(&buf).unwrap();
         assert_eq!(cursor.into_inner().as_slice(), [0x01, 0x02, 0x03]);
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    fn test_vec_reverse_and_write() {
+        let mut buf = alloc::vec![0x01u8, 0x02, 0x03];
+        let mut cursor = Cursor::new(&mut buf);
+        cursor.set_position(0x02);
+        cursor.write(&[0x03, 0x04]).unwrap();
+        cursor.set_position(0);
+        cursor.write(&[0x00, 0x00]).unwrap();
+        drop(cursor);
+        assert_eq!(buf, alloc::vec![0x00, 0x0, 0x03, 0x04]);
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    fn test_vec_write_past_end() {
+        let mut buf = alloc::vec![0x01u8, 0x02, 0x03];
+        let mut cursor = Cursor::new(&mut buf);
+        cursor.set_position(0x04);
+        cursor.write(&[0x05, 0x06]).unwrap();
+        drop(cursor);
+        assert_eq!(buf, alloc::vec![0x01, 0x02, 0x03, 0x00, 0x05, 0x06]);
     }
 }
