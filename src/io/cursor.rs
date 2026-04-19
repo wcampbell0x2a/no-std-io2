@@ -278,7 +278,11 @@ fn vec_write_all(pos: usize, vec: &mut alloc::vec::Vec<u8>, buf: &[u8]) {
     if desired_end > vec.len() {
         vec.resize(desired_end, 0);
     }
-    vec.as_mut_slice()[pos..desired_end].copy_from_slice(buf);
+    // SAFETY: We have just resized the vector to have at least `buf.len()` bytes of valid write space before `vec.len()`,
+    // so we can just write now and don't have to worry about uninitialized bytes or buffer over-runs.
+    unsafe {
+        core::ptr::copy_nonoverlapping(buf.as_ptr(), vec.as_mut_ptr().add(pos), buf.len());
+    }
 }
 
 #[cfg(feature = "alloc")]
