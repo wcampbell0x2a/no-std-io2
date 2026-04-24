@@ -895,6 +895,40 @@ pub trait Seek {
     fn stream_position(&mut self) -> Result<u64> {
         self.seek(SeekFrom::Current(0))
     }
+
+    /// Rewind to the beginning of a stream.
+    ///
+    /// This is a convenience method, equivalent to `seek(SeekFrom::Start(0))`.
+    ///
+    /// # Errors
+    ///
+    /// Rewinding can fail, for example because it might involve flushing a buffer.
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// use std::io::{Read, Seek, Write};
+    /// use std::fs::OpenOptions;
+    ///
+    /// let mut f = OpenOptions::new()
+    ///     .write(true)
+    ///     .read(true)
+    ///     .create(true)
+    ///     .open("foo.txt")?;
+    ///
+    /// let hello = "Hello!\n";
+    /// write!(f, "{hello}")?;
+    /// f.rewind()?;
+    ///
+    /// let mut buf = String::new();
+    /// f.read_to_string(&mut buf)?;
+    /// assert_eq!(&buf, hello);
+    /// # std::io::Result::Ok(())
+    /// ```
+    fn rewind(&mut self) -> Result<()> {
+        self.seek(SeekFrom::Start(0))?;
+        Ok(())
+    }
 }
 
 /// Enumeration of possible methods to seek within an I/O object.
