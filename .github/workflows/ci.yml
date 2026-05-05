@@ -129,3 +129,13 @@ jobs:
         run: cargo no-std --no-default-features
       - name: Check no_std (alloc)
         run: cargo no-std --no-default-features --alloc --features alloc
+  test-miri:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Miri
+      uses: dtolnay/rust-toolchain@nightly
+      with:
+        components: miri
+    - name: Run Miri Tests
+      run: cargo miri test --features "alloc,nightly"
