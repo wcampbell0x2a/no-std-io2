@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v0.9.4] - 2026-05-04
+- Implement rewind convenience function in the Seek trait [#30](https://github.com/wcampbell0x2a/no-std-io2/pull/30)
+- Fix issue where Cursors backed with Vecs always write to the end [#28](https://github.com/wcampbell0x2a/no-std-io2/pull/28)
+
 ## [v0.9.3] - 2025-12-29
 - Add `Seek` `.stream-position()`.
 
